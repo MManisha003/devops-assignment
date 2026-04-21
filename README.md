@@ -80,8 +80,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 ### 4. Test Endpoints
 
+* http://localhost:8000/
 * http://localhost:8000/health
-* http://localhost:8000/data
 * http://localhost:8000/counter
 
 Refresh `/counter` to verify persistence.
@@ -262,7 +262,7 @@ Your repository should contain:
 
 ## ⏱️ Time Expectation
 
-* Estimated effort: **3–5 hours**
+* Estimated effort: **4–6 hours**
 * Maximum: **2 days**
 
 ---
