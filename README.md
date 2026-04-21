@@ -20,8 +20,8 @@ This is a simple FastAPI application with the following endpoints:
 
 | Endpoint   | Description                                           |
 | ---------- | ----------------------------------------------------- |
+| `/`        | GUI                                       |
 | `/health`  | Health check                                          |
-| `/data`    | Sample response                                       |
 | `/counter` | Stores and increments a counter in Azure Blob Storage |
 
 ---
