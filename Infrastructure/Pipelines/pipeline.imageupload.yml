@@ -25,6 +25,7 @@ stages:
   jobs:
   #------------Approvals-----------------------#
   - deployment: DEV
+    pool: 'Default'
     environment: DEV_INFRA_APPROVAL
   #---------------------------------------------#
   - template: ../Templates/release.template.imageupload.yml
@@ -52,6 +53,7 @@ stages:
   jobs:
   #------------Approvals-----------------------#
   - deployment: PROD
+    pool: 'Default'
     environment: PROD_INFRA_APPROVAL
   #---------------------------------------------#
   - template: ../Templates/release.template.imageupload.yml
