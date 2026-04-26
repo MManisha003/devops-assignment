@@ -5,26 +5,26 @@ using '../Bicep/main.bicep'
 param environment = 'dev'
 param resourceGroupName = 'dev-rg'
 param location = 'eastus'
-param appServicePlanName = 'dev-appserviceplan'
+param appServicePlanName = 'devappserviceplan'
 param appServicePlanSku = {
-  name: 'B1'
-  tier: 'Basic'
+  name: 'F1'
+  tier: 'Free'
 }
-param webAppName = 'dev-webapp'
+param webAppName = 'devwebapp'
 param containerImageName = 'fastapi-app'
 param containerImageTag = 'dev-latest'
-param logAnalyticsWorkspaceName = 'dev-loganalytics'
+param logAnalyticsWorkspaceName = 'devloganalytics'
 param logAnalyticsWorkspaceSku = {
   name: 'PerGB2018'
 }
 param logAnalyticsWorkspaceRetentionInDays = 30
-param applicationInsightsName = 'dev-appinsights'
-param containerRegistryName = 'dev-containerregistry'
+param applicationInsightsName = 'devappinsights'
+param containerRegistryName = 'devcontainerregistry'
 param containerRegistrySku = {
   name: 'Basic'
 }
 param webAppKind = 'app,linux,container'
-param storageAccountName = 'dev-storageaccount'
+param storageAccountName = 'devstorageaccount'
 param storageAccountSku = {
   name: 'Standard_LRS'
 }

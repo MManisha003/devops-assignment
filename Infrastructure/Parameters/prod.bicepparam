@@ -5,7 +5,7 @@ using '../Bicep/main.bicep'
 param environment = 'prod'
 param resourceGroupName = 'prod-rg'
 param location = 'eastus'
-param appServicePlanName = 'prod-appserviceplan'
+param appServicePlanName = 'prodappserviceplan'
 param appServicePlanSku = {
   name: 'S1'
   tier: 'Standard'
@@ -36,21 +36,21 @@ param autoScaleRules = [
     cooldown: 'PT5M'
   }
 ]
-param webAppName = 'prod-webapp'
+param webAppName = 'prodwebapp'
 param containerImageName = 'fastapi-app'
 param containerImageTag = 'prod-latest'
-param logAnalyticsWorkspaceName = 'prod-loganalytics'
+param logAnalyticsWorkspaceName = 'prodloganalytics'
 param logAnalyticsWorkspaceSku = {
   name: 'PerGB2018'
 }
 param logAnalyticsWorkspaceRetentionInDays = 90
-param applicationInsightsName = 'prod-appinsights'
-param containerRegistryName = 'prod-containerregistry'
+param applicationInsightsName = 'prodappinsights'
+param containerRegistryName = 'prodcontainerregistry'
 param containerRegistrySku = {
   name: 'Standard'
 }
 param webAppKind = 'app,linux,container'
-param storageAccountName = 'prod-storageaccount'
+param storageAccountName = 'prodstorageaccount'
 param storageAccountSku = {
   name: 'Standard_GRS'
 }
