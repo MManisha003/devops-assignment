@@ -20,6 +20,10 @@ The application runs on Azure Container Apps, persists data in Azure Blob Storag
 * Application Insights (configured)
 
 ---
+### 🔹 Cloud Architecture Diagram
+
+![Cloud Architecture](https://github.com/user-attachments/assets/8a26778f-419b-440e-bf5d-6f8b4762d866)
+
 
 ### 🔹 Architecture Diagram
 
