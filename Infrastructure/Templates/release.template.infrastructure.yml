@@ -13,13 +13,12 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
 
-  - task Powershell@2
+  - task: PowerShell@2
     displayName: "Display Current Job Variables"
     inputs:
       targetType: 'inline'
       script: |
         Get-ChildItem Env: | ForEach-Object { Write-Host "$($_.Name)=$($_.Value)" }
-        
 
   - task: AzureCLI@2
     displayName: 'Deploy Bicep Template'
@@ -29,6 +28,7 @@ jobs:
       scriptLocation: 'inlineScript'
       inlineScript: |
         az deployment sub create `
+          --template-file "$(System.DefaultWorkingDirectory)/Infrastructure/Bicep/main.bicep" `
           --location "${{ parameters.location }}" `
           --parameters "$(System.DefaultWorkingDirectory)/Infrastructure/Parameters/${{ parameters.environment }}.bicepparam" `
           --debug --verbose

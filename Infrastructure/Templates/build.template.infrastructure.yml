@@ -20,6 +20,7 @@ jobs:
       scriptLocation: 'inlineScript'
       inlineScript: |
         az deployment sub validate `
+          --template-file "$(System.DefaultWorkingDirectory)/Infrastructure/Bicep/main.bicep" `
           --location "${{ parameters.location }}" `
           --parameters "$(System.DefaultWorkingDirectory)/Infrastructure/Parameters/${{ parameters.environment }}.bicepparam" `
           --debug --verbose
