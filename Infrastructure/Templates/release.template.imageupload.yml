@@ -42,18 +42,12 @@ jobs:
 
   - script: |
       echo "Building Docker image..."
-      docker buildx build \
-        --platform linux/amd64 \
-        -t ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId) \
-        -t ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:latest \
-        -f ${{ parameters.dockerfilePath }} \
-        ${{ parameters.buildContext }} \    
-        --load
+      docker buildx build --platform linux/amd64 -t ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId) -t ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:latest -f ${{ parameters.dockerfilePath }} --load ${{ parameters.buildContext }}
     displayName: 'Build AMD64 Image'
 
 
   - script: |
       echo "Pushing Docker image to ACR..."
       docker push ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId)
-      docker push ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}
+      docker push ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:latest
     displayName: 'Push Image to ACR'
