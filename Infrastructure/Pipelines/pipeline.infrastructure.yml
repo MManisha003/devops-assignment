@@ -11,7 +11,7 @@ stages:
   - template: ../Templates/build.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
-      location: 'westus'
+      location: 'eastus'
       environment: 'dev'
 
 - stage: DEV_Infrastructure_Deployment
@@ -26,7 +26,7 @@ stages:
   - template: ../Templates/release.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
-      location: 'westus'
+      location: 'eastus'
       environment: 'dev'
 
 - stage: PROD_Infrastructure_Validation
@@ -35,7 +35,7 @@ stages:
   - template: ../Templates/build.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
-      location: 'westus'
+      location: 'eastus'
       environment: 'prod'
 
 - stage: PROD_Infrastructure_Deployment
@@ -50,5 +50,5 @@ stages:
   - template: ../Templates/release.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
-      location: 'westus'
+      location: 'eastus'
       environment: 'prod'
