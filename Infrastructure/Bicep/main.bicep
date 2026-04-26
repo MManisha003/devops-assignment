@@ -25,7 +25,7 @@ param storageBlobRoleDefinitionId string
 param containerAppsEnvironmentName string
 param containerAppName string
 param containerAppConfiguration object
-param containerCpu int
+param containerCpu string
 param containerMemory string
 param containerMinReplicas int
 param containerMaxReplicas int
