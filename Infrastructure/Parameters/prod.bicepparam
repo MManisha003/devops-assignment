@@ -5,7 +5,7 @@ using '../Bicep/main.bicep'
 param environment = 'prod'
 param resourceGroupName = 'prod-rg'
 param location = 'eastus'
-param appServicePlanName = 'prodappserviceplan'
+param appServicePlanName = 'proddevopsassignmentasp'
 param appServicePlanSku = {
   name: 'S1'
   tier: 'Standard'
@@ -36,21 +36,45 @@ param autoScaleRules = [
     cooldown: 'PT5M'
   }
 ]
-param webAppName = 'prodwebapp'
+param webAppName = 'proddevopsassignmentapp'
+param metricAlertsProperties = {
+  severity: 2
+  enabled: true
+  evaluationFrequency: 'PT1M'
+  windowSize: 'PT5M'
+  criteria: {
+    allOf: [
+      {
+        alertSensitivity: 'Medium'
+        fallingPeriods: {
+          numberOfEvaluationPeriods: 4
+          minFailingPeriodsToAlert: 4
+        }
+        name: 'Metric1'
+        metricNamespace: 'Microsoft.Web/sites'
+        metricName: 'CpuTime'
+        operator: 'GreaterOrLessThan'
+        timeAggregation: 'Maximum'
+        skipMetricValidation: false
+        criteriaType: 'StaticThresholdCriterion'
+      }
+    ]
+  }
+}
 param containerImageName = 'fastapi-app'
 param containerImageTag = 'prod-latest'
-param logAnalyticsWorkspaceName = 'prodloganalytics'
+param logAnalyticsWorkspaceName = 'proddevopsassignmentlaw'
 param logAnalyticsWorkspaceSku = {
   name: 'PerGB2018'
 }
 param logAnalyticsWorkspaceRetentionInDays = 90
-param applicationInsightsName = 'prodappinsights'
-param containerRegistryName = 'prodcontainerregistry'
+param applicationInsightsName = 'proddevopsassignmentai'
+param containerRegistryName = 'proddevopsassignmentacr'
 param containerRegistrySku = {
   name: 'Standard'
 }
 param webAppKind = 'app,linux,container'
-param storageAccountName = 'prodstorageaccount'
+param storageAccountName = 'proddevopsassignmentsa'
 param storageAccountSku = {
   name: 'Standard_GRS'
 }

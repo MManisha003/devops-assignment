@@ -30,6 +30,7 @@ param autoScaleRules array = []
 param autoScaleCapacity object = {}
 // Web App Parameters
 param webAppName string
+param metricAlertsProperties object = {}
 param containerImageName string
 param containerImageTag string
 param storageBlobName string
@@ -70,6 +71,7 @@ module infra 'infra.bicep' = {
     autoScaleCapacity: autoScaleCapacity
     webAppName: webAppName
     webAppKind: webAppKind
+    metricAlertsProperties: metricAlertsProperties
     containerImageName: containerImageName
     containerImageTag: containerImageTag
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName

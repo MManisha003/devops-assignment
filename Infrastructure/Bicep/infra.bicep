@@ -27,6 +27,7 @@ param webAppName string
 param webAppKind string
 param containerImageName string
 param containerImageTag string
+param metricAlertsProperties object = {}
 
 // Log Analytics Workspace Parameters
 param logAnalyticsWorkspaceName string
@@ -116,6 +117,18 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
       ]
     }
   }
+}
+
+// Adding Metric Alert for cpu time to monitor the Web App's performance
+
+resource metricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if (environment == 'prod') {
+  name: '${webAppName}-cpu-alert'
+  location: 'global'
+  properties: union({
+    scopes: [
+      webApp.id
+    ]
+  }, metricAlertsProperties)
 }
 
 // Create a Storage Account
