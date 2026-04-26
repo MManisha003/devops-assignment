@@ -7,10 +7,10 @@ name: 'Image-Deployment-$(Date:yyyyMMdd)$(Rev:.r)'
 stages:
 - stage: DEV_Build_And_Validate_Image
   displayName: 'Build and Validate Docker Image'
-  Variables:
-    - template: Variables/dev.yml
+  variables:
+    - template: ../Variables/dev.yml
   jobs:
-  - template: Templates/build.template.imageupload.yml
+  - template: ../Templates/build.template.imageupload.yml
     parameters:
       imageName: $(imageName)
       dockerfilePath: $(dockerfilePath)
@@ -21,13 +21,13 @@ stages:
   displayName: 'Push Docker Image to ACR'
   dependsOn: DEV_Build_And_Validate_Image
   variables:
-    - template: Variables/dev.yml
+    - template: ../Variables/dev.yml
   jobs:
   #------------Approvals-----------------------#
   - deployment: DEV
     environment: DEV_INFRA_APPROVAL
   #---------------------------------------------#
-  - template: Templates/release.template.imageupload.yml
+  - template: ../Templates/release.template.imageupload.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
       acrName: $(acrName)
@@ -35,10 +35,10 @@ stages:
 
 - stage: PROD_Build_And_Validate_Image
   displayName: 'Build and Validate Docker Image'
-  Variables:
-    - template: Variables/prod.yml
+  variables:
+    - template: ../Variables/prod.yml
   jobs:
-  - template: Templates/build.template.imageupload.yml
+  - template: ../Templates/build.template.imageupload.yml
     parameters:
       imageName: $(imageName)
       dockerfilePath: $(dockerfilePath)
@@ -48,13 +48,13 @@ stages:
   displayName: 'Push Docker Image to ACR'
   dependsOn: PROD_Build_And_Validate_Image
   variables:
-    - template: Variables/prod.yml
+    - template: ../Variables/prod.yml
   jobs:
   #------------Approvals-----------------------#
   - deployment: PROD
     environment: PROD_INFRA_APPROVAL
   #---------------------------------------------#
-  - template: Templates/release.template.imageupload.yml
+  - template: ../Templates/release.template.imageupload.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
       acrName: $(acrName)

@@ -8,7 +8,7 @@ stages:
 - stage: DEV_Infrastructure_Validation
   displayName: 'Validate Infrastructure'
   jobs:
-  - template: Templates/build.template.infrastructure.yml
+  - template: ../Templates/build.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
       location: 'eastus'
@@ -22,7 +22,7 @@ stages:
   - deployment: DEV
     environment: DEV_INFRA_APPROVAL
   #---------------------------------------------#
-  - template: Templates/release.template.infrastructure.yml
+  - template: ../Templates/release.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
       location: 'eastus'
@@ -31,7 +31,7 @@ stages:
 - stage: PROD_Infrastructure_Validation
   displayName: 'Validate Infrastructure'
   jobs:
-  - template: Templates/build.template.infrastructure.yml
+  - template: ../Templates/build.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
       location: 'eastus'
@@ -45,7 +45,7 @@ stages:
   - deployment: PROD
     environment: PROD_INFRA_APPROVAL
   #---------------------------------------------#
-  - template: Templates/release.template.infrastructure.yml
+  - template: ../Templates/release.template.infrastructure.yml
     parameters:
       azureSubscription: 'devops-assignment-conn'
       location: 'eastus'
