@@ -3,6 +3,5 @@ variables:
   dockerfilePath: "Infrastructure/Docker/fastapi_dockerfile"
   buildContext: .
 
-  acrName: prod-containerregistry
+  acrName: proddevopsassignmentacr
   resourceGroup: prod-rg
-  containerAppName: prod-containerapp

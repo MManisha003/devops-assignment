@@ -6,7 +6,7 @@ name: 'Image-Deployment-$(Date:yyyyMMdd)$(Rev:.r)'
 
 stages:
 - stage: DEV_Build_And_Validate_Image
-  displayName: 'Build and Validate Docker Image'
+  displayName: 'DEV Image Validation'
   variables:
     - template: ../Variables/dev.yml
   jobs:
@@ -18,7 +18,7 @@ stages:
 
 
 - stage: Push_Image_To_ACR
-  displayName: 'Push Docker Image to ACR'
+  displayName: 'DEV Image Upload'
   dependsOn: DEV_Build_And_Validate_Image
   variables:
     - template: ../Variables/dev.yml
@@ -34,7 +34,7 @@ stages:
       imageName: $(imageName)
 
 - stage: PROD_Build_And_Validate_Image
-  displayName: 'Build and Validate Docker Image'
+  displayName: 'PROD Image Validation'
   variables:
     - template: ../Variables/prod.yml
   jobs:
@@ -45,7 +45,7 @@ stages:
       buildContext: $(buildContext)
 
 - stage: Push_Image_To_ACR
-  displayName: 'Push Docker Image to ACR'
+  displayName: 'PROD Image Upload'
   dependsOn: PROD_Build_And_Validate_Image
   variables:
     - template: ../Variables/prod.yml

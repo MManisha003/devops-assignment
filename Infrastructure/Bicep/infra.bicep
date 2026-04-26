@@ -83,9 +83,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: union(containerAppConfiguration, { registries: [
       {
         server: acr.properties.loginServer
-        identity: {
-          type: 'SystemAssigned'
-        }
+        identity: 'System'
       }
     ]})
     template: {
