@@ -1,7 +1,7 @@
 # Template to push Docker image to Azure Container Registry
 
 parameters:
-  containerRegistry: ""
+  azureSubscription: ""
   acrName: ""
   imageName: ""
   dockerfilePath: ""
@@ -23,25 +23,36 @@ jobs:
       script: |
         Get-ChildItem Env: | ForEach-Object { Write-Host "$($_.Name)=$($_.Value)" }
 
-
-  - task: Docker@2
-    displayName: Build Image
+  - task: AzureCLI@2
+    displayName: 'Login to ACR'
     inputs:
-      containerRegistry: ${{ parameters.containerRegistry }}
-      repository: ${{ parameters.imageName }}
-      command: 'build'
-      Dockerfile: '$(dockerfilePath)'
-      buildContext: '$(buildContext)'
-      tags: |
-        $(Build.BuildId)
-        latest
+      azureSubscription: ${{ parameters.azureSubscription }}
+      scriptType: pscore
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az acr login --name ${{ parameters.acrName }}
 
-  - task: Docker@2
-    displayName: Push Image
-    inputs:
-      containerRegistry: ${{ parameters.containerRegistry }}
-      repository: ${{ parameters.imageName }}
-      command: 'push'
-      tags: |
-        $(Build.BuildId)
-        latest
+  # Since we are using Apple silicon, we need to use linux/amd64 platform for building and pushing the image to ACR
+
+  - script: |
+      echo "Setting up Docker Buildx for multi-platform builds..."
+      docker buildx create --use --name mybuilder || docker buildx use mybuilder
+      docker buildx inspect --bootstrap
+    displayName: 'Create/Use buildx builder
+
+  - script: |
+      echo "Building Docker image..."
+      docker buildx build
+        --platform linux/amd64
+        -t ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId)
+        -t ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}
+        -f ${{ parameters.dockerfilePath }}
+        ${{ parameters.buildContext }}
+        --load
+    displayName: 'Build AMD64 Image'
+
+  - script: |
+      echo "Pushing Docker image to ACR..."
+      docker push ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId)
+      docker push ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}
+    displayName: 'Push Image to ACR'
