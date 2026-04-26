@@ -91,6 +91,24 @@ https://devdevopsassignmentapp.delightfulpebble-df328eea.eastus.azurecontainerap
 
 ---
 
+## 📸 Evidence
+
+### CI/CD Pipeline
+
+![Infra Pipeline Run](<img width="1312" height="762" alt="Infra_Pipeline" src="https://github.com/user-attachments/assets/38b1c7ec-9762-4230-b3b9-4e4b8648d786" />)
+)
+
+![Image Upload Pipeline Run](<img width="1512" height="867" alt="Image_Pipeline" src="https://github.com/user-attachments/assets/41173598-8565-4bd0-a242-65658817f63d" />)
+)
+
+
+---
+
+### Application Deployment
+
+![Container App](<img width="1511" height="621" alt="Application" src="https://github.com/user-attachments/assets/67ad7676-e6e5-4906-81e3-0dc1f55ea1a7" />
+)
+
 ### 🔹 Notes
 
 * Managed Identity is used for secure access
