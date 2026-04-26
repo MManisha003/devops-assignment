@@ -131,6 +131,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
               value: applicationInsights.properties.ConnectionString
             }
             {
+              name: 'USE_MANAGED_IDENTITY'
+              value: 'true'
+            } 
+            {
               name: 'BLOB_ACCOUNT_URL'
               value: 'https://${storageAccountName}.blob.${az.environment().suffixes.storage}'
             }
