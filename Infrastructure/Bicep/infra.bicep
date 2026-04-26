@@ -17,16 +17,21 @@ param storageBlobServicePolicies object
 param storageBlobContainerName string
 param storageBlobName string
 param storageBlobRoleDefinitionId string
-param appServicePlanName string
-param autoScaleCapacity object = {}
-param autoScaleRules array = []
-param appServicePlanSku object
 
-// Web App Parameters
-param webAppName string
-param webAppKind string
+// Container Apps Parameters
+param containerAppsEnvironmentName string
+param containerAppName string
+param containerAppConfiguration object
+param containerCpu string
+param containerMemory string
+param containerMinReplicas int
+param containerMaxReplicas int
+
+// Container Parameters
 param containerImageName string
 param containerImageTag string
+
+// Monitoring Parameters
 param metricAlertsProperties object = {}
 
 // Log Analytics Workspace Parameters
@@ -49,72 +54,73 @@ resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' = {
   }
 }
 
-// Create an App Service Plan
+// Create a Container Apps Environment
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
-  name: appServicePlanName
-  location: resourceGroup().location
-  sku: appServicePlanSku
-}
-// Adding MetricTrigger for Auto Scaling the App Service Plan based on CPU usage
-var autoScaleRuleObjects = [
-  for i in autoScaleRules: {
-    scaleAction: i.scaleAction
-    metricTrigger: union({metricResourceUri: appServicePlan.id}, i.metricTrigger)
-  }
-]
-
-resource aspAutoScaleSettings 'Microsoft.Insights/autoscalesettings@2015-04-01' = if (environment == 'prod') {
-  name: '${appServicePlanName}-autoscale'
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' = {
+  name: containerAppsEnvironmentName
   location: resourceGroup().location
   properties: {
-    enabled: true
-    targetResourceUri: appServicePlan.id
-    profiles: [
-      {
-        name: 'Auto Scale Rules'
-        capacity: autoScaleCapacity
-        rules: autoScaleRuleObjects
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logAnalyticsWorkspace.properties.customerId
+        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
-    ]
+    }
   }
 }
 
-// Create a Web App
+// Create a Container App
 
-resource webApp 'Microsoft.Web/sites@2021-02-01' = {
-  name: webAppName
+resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
+  name: containerAppName
   location: resourceGroup().location
-  kind: webAppKind
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      linuxFxVersion: 'DOCKER|mcr.microsoft.com/azuredocs/aci-helloworld:latest'
-      appSettings: [
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: applicationInsights.properties.ConnectionString
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: union(containerAppConfiguration, { registries: [
+      {
+        server: acr.properties.loginServer
+        identity: {
+          type: 'SystemAssigned'
         }
+      }
+    ]})
+    template: {
+      containers: [
         {
-          name: 'BLOB_ACCOUNT_URL'
-          value: 'https://${storageAccountName}.blob.${az.environment().suffixes.storage}'
-        }
-        {
-          name: 'BLOB_CONTAINER'
-          value: storageBlobContainerName
-        }
-        {
-          name: 'BLOB_NAME'
-          value: storageBlobName
-        }
-        {
-          name: 'DOCKER_REGISTRY_SERVER_URL'
-          value: 'https://${acr.properties.loginServer}'
+          name: containerImageName
+          image: 'mcr.microsoft.com/azuredocs/aci-helloworld:latest'
+          resources: {
+            cpu: json(containerCpu)
+            memory: containerMemory
+          }
+          env: [
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              value: applicationInsights.properties.ConnectionString
+            }
+            {
+              name: 'BLOB_ACCOUNT_URL'
+              value: 'https://${storageAccountName}.blob.${az.environment().suffixes.storage}'
+            }
+            {
+              name: 'BLOB_CONTAINER'
+              value: storageBlobContainerName
+            }
+            {
+              name: 'BLOB_NAME'
+              value: storageBlobName
+            }
+          ]
         }
       ]
+      scale: {
+        minReplicas: containerMinReplicas
+        maxReplicas: containerMaxReplicas
+      }
     }
   }
 }
@@ -122,11 +128,11 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
 // Adding Metric Alert for cpu time to monitor the Web App's performance
 
 resource metricAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = if (environment == 'prod') {
-  name: '${webAppName}-cpu-alert'
+  name: '${containerAppName}-cpu-alert'
   location: 'global'
   properties: union({
     scopes: [
-      webApp.id
+      containerApp.id
     ]
   }, metricAlertsProperties)
 }
@@ -154,26 +160,26 @@ resource storageBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/co
   }
 }
 
-// RBAC for Web App to access Storage Account
-resource webAppStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(webApp.id, storageAccount.id, 'Storage Blob Data Contributor')
+// RBAC for Container App to access Storage Account
+resource containerAppStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(containerApp.id, storageAccount.id, 'Storage Blob Data Contributor')
   scope: storageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobRoleDefinitionId) // Storage Blob Data Contributor
-    principalId: webApp.identity.principalId
+    principalId: containerApp.identity.principalId
     principalType: 'ServicePrincipal'
   }
 }
 
-// RBAC for Web App to pull from ACR
-resource webAppAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(acr.id, webApp.id, 'AcrPull')
+// RBAC for Container App to pull from ACR
+resource containerAppAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(acr.id, containerApp.id, 'AcrPull')
   scope: acr
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', containerPullRoleDefinitionId) // AcrPull
-    principalId: webApp.identity.principalId
+    principalId: containerApp.identity.principalId
     principalType: 'ServicePrincipal'
-    description: 'Allow Web App to pull from ACR'
+    description: 'Allow Container App to pull from ACR'
   }
 }
 
@@ -201,8 +207,8 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 // Outputs
-output webAppName string = webApp.name
-output webAppUrl string = 'https://${webAppName}.azurewebsites.net'
+output containerAppName string = containerApp.name
+output containerAppUrl string = 'https://${containerAppName}.${containerAppsEnvironment.properties.defaultDomain}'
 output deployedImageUri string = '${acr.properties.loginServer}/${containerImageName}:${containerImageTag}'
 output acrLoginServer string = acr.properties.loginServer
 

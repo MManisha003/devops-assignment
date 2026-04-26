@@ -5,38 +5,19 @@ using '../Bicep/main.bicep'
 param environment = 'prod'
 param resourceGroupName = 'prod-rg'
 param location = 'eastus'
-param appServicePlanName = 'proddevopsassignmentasp'
-param appServicePlanSku = {
-  name: 'S1'
-  tier: 'Standard'
-  capacity: 2
-}
-param autoScaleCapacity = {
-  min: 2
-  max: 5
-  default: 2
-}
-param autoScaleRules = [
-  {
-    metricName: 'CpuPercentage'
-    operator: 'GreaterThan'
-    threshold: 70
-    timeAggregation: 'Average'
-    direction: 'Increase'
-    changeCount: 1
-    cooldown: 'PT5M'
+param containerAppsEnvironmentName = 'proddevopsassignmentcae'
+param containerAppName = 'proddevopsassignmentapp'
+param containerAppConfiguration = {
+  ingress: {
+    external: true
+    targetPort: 8000
+    transport: 'http'
   }
-  {
-    metricName: 'CpuPercentage'
-    operator: 'LessThan'
-    threshold: 30
-    timeAggregation: 'Average'
-    direction: 'Decrease'
-    changeCount: 1
-    cooldown: 'PT5M'
-  }
-]
-param webAppName = 'proddevopsassignmentapp'
+}
+param containerCpu = '0.5'
+param containerMemory = '1.0Gi'
+param containerMinReplicas = 2
+param containerMaxReplicas = 5
 param metricAlertsProperties = {
   severity: 2
   enabled: true
@@ -51,9 +32,10 @@ param metricAlertsProperties = {
           minFailingPeriodsToAlert: 4
         }
         name: 'Metric1'
-        metricNamespace: 'Microsoft.Web/sites'
-        metricName: 'CpuTime'
-        operator: 'GreaterOrLessThan'
+        metricNamespace: 'Microsoft.App/containerApps'
+        metricName: 'CPUUsage'
+        operator: 'GreaterThan'
+        threshold: 80
         timeAggregation: 'Maximum'
         skipMetricValidation: false
         criteriaType: 'StaticThresholdCriterion'
@@ -73,7 +55,6 @@ param containerRegistryName = 'proddevopsassignmentacr'
 param containerRegistrySku = {
   name: 'Standard'
 }
-param webAppKind = 'app,linux,container'
 param storageAccountName = 'proddevopsassignmentsa'
 param storageAccountSku = {
   name: 'Standard_GRS'

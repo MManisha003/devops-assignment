@@ -6,7 +6,7 @@ name: 'Infrastructure-Deployment-$(Date:yyyyMMdd)$(Rev:.r)'
 stages:
 
 - stage: DEV_Infrastructure_Validation
-  displayName: 'Validate Infrastructure'
+  displayName: 'DEV Validation'
   jobs:
   - template: ../Templates/build.template.infrastructure.yml
     parameters:
@@ -15,7 +15,7 @@ stages:
       environment: 'dev'
 
 - stage: DEV_Infrastructure_Deployment
-  displayName: 'Deploy Infrastructure'
+  displayName: 'DEV Deployment'
   dependsOn: DEV_Infrastructure_Validation
   jobs:
   #------------Approvals-----------------------#
@@ -30,7 +30,7 @@ stages:
       environment: 'dev'
 
 - stage: PROD_Infrastructure_Validation
-  displayName: 'Validate Infrastructure'
+  displayName: 'PROD Validation'
   jobs:
   - template: ../Templates/build.template.infrastructure.yml
     parameters:
@@ -39,7 +39,7 @@ stages:
       environment: 'prod'
 
 - stage: PROD_Infrastructure_Deployment
-  displayName: 'Deploy Infrastructure'
+  displayName: 'PROD Deployment'
   dependsOn: PROD_Infrastructure_Validation
   jobs:
   #------------Approvals-----------------------#

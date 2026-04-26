@@ -5,12 +5,19 @@ using '../Bicep/main.bicep'
 param environment = 'dev'
 param resourceGroupName = 'dev-rg'
 param location = 'eastus'
-param appServicePlanName = 'devdevopsassignmentasp'
-param appServicePlanSku = {
-  name: 'B1'
-  tier: 'Basic'
+param containerAppsEnvironmentName = 'devdevopsassignmentcae'
+param containerAppName = 'devdevopsassignmentapp'
+param containerAppConfiguration = {
+  ingress: {
+    external: true
+    targetPort: 8000
+    transport: 'http'
+  }
 }
-param webAppName = 'devdevopsassignmentapp'
+param containerCpu = '0.25'
+param containerMemory = '0.5Gi'
+param containerMinReplicas = 1
+param containerMaxReplicas = 1
 param containerImageName = 'fastapi-app'
 param containerImageTag = 'dev-latest'
 param logAnalyticsWorkspaceName = 'devdevopsassignmentlaw'
@@ -23,7 +30,6 @@ param containerRegistryName = 'devdevopsassignmentacr'
 param containerRegistrySku = {
   name: 'Basic'
 }
-param webAppKind = 'app,linux,container'
 param storageAccountName = 'devdevopsassignmentsa'
 param storageAccountSku = {
   name: 'Standard_LRS'

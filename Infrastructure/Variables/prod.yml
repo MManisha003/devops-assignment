@@ -5,4 +5,4 @@ variables:
 
   acrName: prod-containerregistry
   resourceGroup: prod-rg
-  webAppName: prod-webapp
+  containerAppName: prod-containerapp

@@ -2,8 +2,8 @@
 // It includes the following resources:
 // - Azure Container Registry
 // - Storage Account
-// - App Service Plan
-// - Web App
+// - Container Apps Environment
+// - Container App
 // - Application Insights
 
 targetScope = 'subscription'
@@ -21,19 +21,21 @@ param storageAccountSku object
 param storageBlobServicePolicies object
 param storageBlobContainerName string
 param storageBlobRoleDefinitionId string
-// App Service Parameters
-param appServicePlanName string
-param appServicePlanSku object
-param webAppKind string
+// Container Apps Parameters
+param containerAppsEnvironmentName string
+param containerAppName string
+param containerAppConfiguration object
+param containerCpu string
+param containerMemory string
+param containerMinReplicas int
+param containerMaxReplicas int
 param environment string
-param autoScaleRules array = []
-param autoScaleCapacity object = {}
-// Web App Parameters
-param webAppName string
-param metricAlertsProperties object = {}
+// Container Parameters
 param containerImageName string
 param containerImageTag string
 param storageBlobName string
+// Monitoring Parameters
+param metricAlertsProperties object = {}
 // Logging Parameters
 param logAnalyticsWorkspaceName string
 param logAnalyticsWorkspaceSku object
@@ -64,20 +66,21 @@ module infra 'infra.bicep' = {
     storageBlobName: storageBlobName
     storageBlobRoleDefinitionId: storageBlobRoleDefinitionId
     containerPullRoleDefinitionId: containerPullRoleDefinitionId
-    appServicePlanName: appServicePlanName
-    appServicePlanSku: appServicePlanSku
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+    containerAppName: containerAppName
+    containerAppConfiguration: containerAppConfiguration
+    containerCpu: containerCpu
+    containerMemory: containerMemory
+    containerMinReplicas: containerMinReplicas
+    containerMaxReplicas: containerMaxReplicas
     environment: environment
-    autoScaleRules: autoScaleRules
-    autoScaleCapacity: autoScaleCapacity
-    webAppName: webAppName
-    webAppKind: webAppKind
-    metricAlertsProperties: metricAlertsProperties
     containerImageName: containerImageName
     containerImageTag: containerImageTag
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     logAnalyticsWorkspaceSku: logAnalyticsWorkspaceSku
     logAnalyticsWorkspaceRetentionInDays: logAnalyticsWorkspaceRetentionInDays
     applicationInsightsName: applicationInsightsName
+    metricAlertsProperties: metricAlertsProperties
   }
 }
 
