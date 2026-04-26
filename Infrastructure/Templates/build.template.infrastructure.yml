@@ -10,7 +10,7 @@ jobs:
 - job: ValidateInfrastructure
   displayName: 'Validate Infrastructure Bicep Template'
   pool:
-    vmImage: 'ubuntu-latest'
+    name: 'Default'
   steps:
   - task: AzureCLI@2
     displayName: 'Validate Bicep Template'
