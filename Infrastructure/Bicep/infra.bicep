@@ -5,6 +5,12 @@ targetScope = 'resourceGroup'
 // Common Parameters
 
 param environment string
+
+// User Assigned Identity Parameters
+
+param userAssignedIdentityName string
+
+
 // ACR Parameters
 param containerRegistryName string
 param containerRegistrySku object
@@ -42,6 +48,13 @@ param logAnalyticsWorkspaceRetentionInDays int
 // Application Insights Parameters
 param applicationInsightsName string
 
+// create a user assigned identity
+
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: userAssignedIdentityName
+  location: resourceGroup().location
+}
+
 
 // Create an Azure Container Registry
 
@@ -51,6 +64,20 @@ resource acr 'Microsoft.ContainerRegistry/registries@2021-09-01' = {
   sku: containerRegistrySku
   properties: {
     adminUserEnabled: true
+  }
+  dependsOn: [
+    userAssignedIdentity
+   ]
+}
+
+resource acrRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(acr.id, userAssignedIdentity.id, 'AcrPull')
+  scope: acr
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', containerPullRoleDefinitionId) // AcrPull
+    principalId: userAssignedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    description: 'Allow Container App to pull from ACR'
   }
 }
 
@@ -76,14 +103,17 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: resourceGroup().location
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentity.id}': {}
+    }
   }
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: union(containerAppConfiguration, { registries: [
       {
         server: acr.properties.loginServer
-        identity: 'system'
+        identity: userAssignedIdentity.id
       }
     ]})
     template: {
@@ -121,6 +151,10 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       }
     }
   }
+  dependsOn: [
+    acrRoleAssignment
+    storageBlobRoleAssignment
+  ]
 }
 
 // Adding Metric Alert for cpu time to monitor the Web App's performance
@@ -142,6 +176,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   location: resourceGroup().location
   sku: storageAccountSku
   kind: 'StorageV2'
+  dependsOn: [
+    userAssignedIdentity
+  ]
 }
 
 resource storageAccountBlob 'Microsoft.Storage/storageAccounts/blobServices@2021-09-01' = {
@@ -158,26 +195,16 @@ resource storageBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/co
   }
 }
 
-// RBAC for Container App to access Storage Account
-resource containerAppStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(containerApp.id, storageAccount.id, 'Storage Blob Data Contributor')
+// Assigning Storage Blob Data Contributor role to the user assigned identity for the blob container
+
+resource storageBlobRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(storageBlobContainer.id, userAssignedIdentity.id, 'StorageBlobDataContributor')
   scope: storageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobRoleDefinitionId) // Storage Blob Data Contributor
-    principalId: containerApp.identity.principalId
+    principalId: userAssignedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
-  }
-}
-
-// RBAC for Container App to pull from ACR
-resource containerAppAcrRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(acr.id, containerApp.id, 'AcrPull')
-  scope: acr
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', containerPullRoleDefinitionId) // AcrPull
-    principalId: containerApp.identity.principalId
-    principalType: 'ServicePrincipal'
-    description: 'Allow Container App to pull from ACR'
+    description: 'Allow Container App to access Blob Storage'
   }
 }
 

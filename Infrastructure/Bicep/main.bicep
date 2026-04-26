@@ -12,6 +12,8 @@ targetScope = 'subscription'
 
 param location string
 param resourceGroupName string
+// User Assigned Identity Parameters
+param userAssignedIdentityName string
 // ACR Parameters
 param containerRegistryName string
 param containerRegistrySku object
@@ -57,6 +59,7 @@ module infra 'infra.bicep' = {
   name: 'deployInfra'
   scope: rg
   params: {
+    userAssignedIdentityName: userAssignedIdentityName
     containerRegistryName: containerRegistryName
     containerRegistrySku: containerRegistrySku
     storageAccountName: storageAccountName

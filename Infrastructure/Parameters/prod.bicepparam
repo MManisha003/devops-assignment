@@ -3,6 +3,7 @@
 using '../Bicep/main.bicep'
 
 param environment = 'prod'
+param userAssignedIdentityName = 'proddevopsassignmentuai'
 param resourceGroupName = 'prod-rg'
 param location = 'eastus'
 param containerAppsEnvironmentName = 'proddevopsassignmentcae'
