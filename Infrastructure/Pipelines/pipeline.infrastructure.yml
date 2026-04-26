@@ -29,18 +29,18 @@ stages:
       location: 'eastus'
       environment: 'dev'
 
-- stage: PROD_Infrastructure_Validation
-  displayName: 'PROD Validation'
+- stage: Approvals
+  dependsOn: [DEV_Infrastructure_Deployment]
   jobs:
-  - template: ../Templates/build.template.infrastructure.yml
-    parameters:
-      azureSubscription: 'devops-assignment-conn'
-      location: 'eastus'
-      environment: 'prod'
+  #------------Approvals-----------------------#
+  - deployment: PROD
+    pool: 'Default'
+    environment: PROD_INFRA_APPROVAL
+  #---------------------------------------------#
 
 - stage: PROD_Infrastructure_Deployment
   displayName: 'PROD Deployment'
-  dependsOn: PROD_Infrastructure_Validation
+  dependsOn: [Approvals]
   jobs:
   #------------Approvals-----------------------#
   - deployment: PROD
