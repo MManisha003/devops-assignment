@@ -1,0 +1,52 @@
+# Pipeline for Bicep Infrastructure deployment
+
+trigger: none
+name: 'Infrastructure-Deployment-$(Date:yyyyMMdd)$(Rev:.r)'
+
+stages:
+
+- stage: DEV_Infrastructure_Validation
+  displayName: 'Validate Infrastructure'
+  jobs:
+  - template: Templates/build.template.infrastructure.yml
+    parameters:
+      azureSubscription: 'devops-assignment-conn'
+      location: 'eastus'
+      environment: 'dev'
+
+- stage: DEV_Infrastructure_Deployment
+  displayName: 'Deploy Infrastructure'
+  dependsOn: DEV_Infrastructure_Validation
+  jobs:
+  #------------Approvals-----------------------#
+  - deployment: DEV
+    environment: DEV_INFRA_APPROVAL
+  #---------------------------------------------#
+  - template: Templates/release.template.infrastructure.yml
+    parameters:
+      azureSubscription: 'devops-assignment-conn'
+      location: 'eastus'
+      environment: 'dev'
+
+- stage: PROD_Infrastructure_Validation
+  displayName: 'Validate Infrastructure'
+  jobs:
+  - template: Templates/build.template.infrastructure.yml
+    parameters:
+      azureSubscription: 'devops-assignment-conn'
+      location: 'eastus'
+      environment: 'prod'
+
+- stage: PROD_Infrastructure_Deployment
+  displayName: 'Deploy Infrastructure'
+  dependsOn: PROD_Infrastructure_Validation
+  jobs:
+  #------------Approvals-----------------------#
+  - deployment: PROD
+    environment: PROD_INFRA_APPROVAL
+  #---------------------------------------------#
+  - template: Templates/release.template.infrastructure.yml
+    parameters:
+      azureSubscription: 'devops-assignment-conn'
+      location: 'eastus'
+      environment: 'prod'

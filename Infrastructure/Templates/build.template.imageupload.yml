@@ -1,0 +1,45 @@
+# Template to validate Dockerfile and build the application image
+
+parameters:
+  imageName: ""
+  dockerfilePath: ""
+  buildContext: ""
+
+jobs:
+
+- job: BuildApplication
+  displayName: 'Build & Validate Docker Image'
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+
+  - task: PowerShell@2
+    displayName: "Display Current Job Variables"
+    inputs:
+      targetType: 'inline'
+      script: |
+        Get-ChildItem Env: | ForEach-Object { Write-Host "$($_.Name)=$($_.Value)" }
+
+  - script: |
+      echo "Validating Dockerfile..."
+      if [ ! -f "${{ parameters.dockerfilePath }}" ]; then
+        echo "Dockerfile not found!"
+        exit 1
+      fi
+    displayName: 'Validate Dockerfile'
+
+  - script: |
+      echo "Building Docker image..."
+      docker build \
+        -t ${{ parameters.imageName }}:$(Build.BuildId) \
+        -f ${{ parameters.dockerfilePath }} \
+        ${{ parameters.buildContext }}
+    displayName: 'Build Docker Image'
+
+  - script: |
+      echo "Running container for validation..."
+      docker run -d -p 8000:8000 ${{ parameters.imageName }}:$(Build.BuildId)
+      sleep 5
+      curl -f http://localhost:8000/health || exit 1
+    displayName: 'Validate Container Health'

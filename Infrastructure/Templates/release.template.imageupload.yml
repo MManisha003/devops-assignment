@@ -1,0 +1,44 @@
+# Template to push Docker image to Azure Container Registry
+
+parameters:
+  azureSubscription: ""
+  acrName: ""
+  imageName: ""
+
+jobs:
+
+- job: PushImageToACR
+  displayName: 'Push Docker Image to ACR'
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+
+  - task: PowerShell@2
+    displayName: "Display Current Job Variables"
+    inputs:
+      targetType: 'inline'
+      script: |
+        Get-ChildItem Env: | ForEach-Object { Write-Host "$($_.Name)=$($_.Value)" }
+
+  - task: AzureCLI@2
+    displayName: 'Login to ACR'
+    inputs:
+      azureSubscription: ${{ parameters.azureSubscription }}
+      scriptType: pscore
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az acr login --name ${{ parameters.acrName }}
+
+  - script: |
+      echo "Tagging image..."
+      docker tag \
+        ${{ parameters.imageName }}:$(Build.BuildId) \
+        ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId)
+    displayName: 'Tag Image'
+
+  - script: |
+      echo "Pushing image to ACR..."
+      docker push \
+        ${{ parameters.acrName }}.azurecr.io/${{ parameters.imageName }}:$(Build.BuildId)
+    displayName: 'Push Image'

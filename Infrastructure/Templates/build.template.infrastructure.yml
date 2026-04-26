@@ -1,0 +1,26 @@
+# Template to validate the main.bicep file and parameters files for the infrastructure deployment
+
+parameters:
+  azureSubscription: ""
+  location: ""
+  environment: ""
+
+jobs:
+
+- job: ValidateInfrastructure
+  displayName: 'Validate Infrastructure Bicep Template'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureCLI@2
+    displayName: 'Validate Bicep Template'
+    inputs:
+      azureSubscription: ${{ parameters.azureSubscription }}
+      scriptType: pscore
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az deployment sub validate `
+          --location "${{ parameters.location }}" `
+          --parameters "$(System.DefaultWorkingDirectory)/Infrastructure/Parameters/${{ parameters.environment }}.bicepparam" `
+          --debug --verbose
+        

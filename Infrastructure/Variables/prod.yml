@@ -1,0 +1,8 @@
+variables:
+  imageName: python-api
+  dockerfilePath: "Infrastructure/Docker/fastapi_dockerfile"
+  buildContext: .
+
+  acrName: prod-containerregistry
+  resourceGroup: prod-rg
+  webAppName: prod-webapp
