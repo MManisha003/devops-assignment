@@ -30,7 +30,7 @@ stages:
   #---------------------------------------------#
   - template: ../Templates/release.template.imageupload.yml
     parameters:
-      containerRegistry: 'devopsassignmentacr' # Use the actual container registry name
+      containerRegistry: 'devops-assignment-registry' # Use the actual container registry name
       acrName: $(acrName)
       imageName: $(imageName)
       dockerfilePath: $(dockerfilePath)
@@ -58,7 +58,7 @@ stages:
   #---------------------------------------------#
   - template: ../Templates/release.template.imageupload.yml
     parameters:
-      containerRegistry: 'devopsassignmentacr'
+      containerRegistry: 'devops-assignment-registry'
       acrName: $(acrName)
       imageName: $(imageName)
       dockerfilePath: $(dockerfilePath)
