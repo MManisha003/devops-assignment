@@ -14,7 +14,7 @@ param containerAppConfiguration = {
     transport: 'http'
   }
 }
-param containerCpu = '1Gi'
+param containerCpu = 1
 param containerMemory = '1Gi'
 param containerMinReplicas = 1
 param containerMaxReplicas = 1

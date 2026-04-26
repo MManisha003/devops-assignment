@@ -22,7 +22,7 @@ param storageBlobRoleDefinitionId string
 param containerAppsEnvironmentName string
 param containerAppName string
 param containerAppConfiguration object
-param containerCpu string
+param containerCpu int
 param containerMemory string
 param containerMinReplicas int
 param containerMaxReplicas int
@@ -92,7 +92,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
           name: containerImageName
           image: '${acr.properties.loginServer}/${containerImageName}:${containerImageTag}'
           resources: {
-            cpu: json(containerCpu)
+            cpu: containerCpu
             memory: containerMemory
           }
           env: [
