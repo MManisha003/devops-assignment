@@ -83,14 +83,14 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
     configuration: union(containerAppConfiguration, { registries: [
       {
         server: acr.properties.loginServer
-        identity: 'System'
+        identity: 'system'
       }
     ]})
     template: {
       containers: [
         {
           name: containerImageName
-          image: 'mcr.microsoft.com/azuredocs/aci-helloworld:latest'
+          image: '${acr.properties.loginServer}/${containerImageName}:${containerImageTag}'
           resources: {
             cpu: json(containerCpu)
             memory: containerMemory

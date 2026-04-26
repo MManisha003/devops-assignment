@@ -14,12 +14,12 @@ param containerAppConfiguration = {
     transport: 'http'
   }
 }
-param containerCpu = '0.5'
-param containerMemory = '0.5Gi'
+param containerCpu = '1Gi'
+param containerMemory = '1Gi'
 param containerMinReplicas = 1
 param containerMaxReplicas = 1
-param containerImageName = 'fastapi-app'
-param containerImageTag = 'dev-latest'
+param containerImageName = 'python-api'
+param containerImageTag = '10'
 param logAnalyticsWorkspaceName = 'devdevopsassignmentlaw'
 param logAnalyticsWorkspaceSku = {
   name: 'PerGB2018'
