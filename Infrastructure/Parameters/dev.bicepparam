@@ -20,7 +20,7 @@ param containerMemory = '1Gi'
 param containerMinReplicas = 1
 param containerMaxReplicas = 1
 param containerImageName = 'python-api'
-param containerImageTag = '10'
+param containerImageTag = '18'
 param logAnalyticsWorkspaceName = 'devdevopsassignmentlaw'
 param logAnalyticsWorkspaceSku = {
   name: 'PerGB2018'
