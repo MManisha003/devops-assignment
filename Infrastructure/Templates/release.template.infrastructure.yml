@@ -21,6 +21,19 @@ jobs:
         Get-ChildItem Env: | ForEach-Object { Write-Host "$($_.Name)=$($_.Value)" }
 
   - task: AzureCLI@2
+    displayName: 'Bicep Preview using What-If'
+    inputs:
+      azureSubscription: ${{ parameters.azureSubscription }}
+      scriptType: pscore
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az deployment sub what-if `
+          --template-file "$(System.DefaultWorkingDirectory)/Infrastructure/Bicep/main.bicep" `
+          --location "${{ parameters.location }}" `
+          --parameters "$(System.DefaultWorkingDirectory)/Infrastructure/Parameters/${{ parameters.environment }}.bicepparam" `
+          --debug --verbose
+
+  - task: AzureCLI@2
     displayName: 'Deploy Bicep Template'
     inputs:
       azureSubscription: ${{ parameters.azureSubscription }}

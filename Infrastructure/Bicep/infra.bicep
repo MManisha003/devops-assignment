@@ -133,7 +133,11 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
             {
               name: 'USE_MANAGED_IDENTITY'
               value: 'true'
-            } 
+            }
+            {
+              name: 'AZURE_CLIENT_ID'
+              value: userAssignedIdentity.properties.clientId
+            }
             {
               name: 'BLOB_ACCOUNT_URL'
               value: 'https://${storageAccountName}.blob.${az.environment().suffixes.storage}'
