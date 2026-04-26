@@ -33,21 +33,21 @@ stages:
       azureSubscription: 'devops-assignment-conn'
       acrName: $(acrName)
       imageName: $(imageName)
-
-- stage: PROD_Build_And_Validate_Image
-  displayName: 'PROD Image Validation'
-  variables:
-    - template: ../Variables/prod.yml
-  jobs:
-  - template: ../Templates/build.template.imageupload.yml
-    parameters:
-      imageName: $(imageName)
       dockerfilePath: $(dockerfilePath)
       buildContext: $(buildContext)
 
+- stage: Approvals
+  dependsOn: [DEV_Push_Image_To_ACR]
+  jobs:
+  #------------Approvals-----------------------#
+  - deployment: PROD
+    pool: 'Default'
+    environment: PROD_INFRA_APPROVAL
+  #---------------------------------------------#
+
 - stage: PROD_Push_Image_To_ACR
   displayName: 'PROD Image Upload'
-  dependsOn: PROD_Build_And_Validate_Image
+  dependsOn: [Approvals]
   variables:
     - template: ../Variables/prod.yml
   jobs:
@@ -60,4 +60,6 @@ stages:
     parameters:
       azureSubscription: 'devops-assignment-conn'
       acrName: $(acrName)
-      imageName: $(imageName) 
+      imageName: $(imageName)
+      dockerfilePath: $(dockerfilePath)
+      buildContext: $(buildContext)
