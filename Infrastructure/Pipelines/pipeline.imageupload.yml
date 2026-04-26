@@ -17,7 +17,7 @@ stages:
       buildContext: $(buildContext)
 
 
-- stage: Push_Image_To_ACR
+- stage: DEV_Push_Image_To_ACR
   displayName: 'DEV Image Upload'
   dependsOn: DEV_Build_And_Validate_Image
   variables:
@@ -44,7 +44,7 @@ stages:
       dockerfilePath: $(dockerfilePath)
       buildContext: $(buildContext)
 
-- stage: Push_Image_To_ACR
+- stage: PROD_Push_Image_To_ACR
   displayName: 'PROD Image Upload'
   dependsOn: PROD_Build_And_Validate_Image
   variables:
